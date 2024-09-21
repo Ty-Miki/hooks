@@ -1,0 +1,501 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>App</title>
+    <script>
+        function adjustZoom() {
+            const screenWidth = window.innerWidth;
+            if (screenWidth >= 1400 && screenWidth <= 1599) {
+                document.body.style.zoom = "88%";
+            }
+            document.body.classList.remove("body-hidden");
+
+        }
+        document.addEventListener("DOMContentLoaded", adjustZoom);
+        document.addEventListener("resize", adjustZoom);
+        window.onload = function() {
+             adjustZoom();
+        };
+    </script>
+</head>
+<body class="body-hidden">
+<div class="root">
+    <header>
+        <img class="logo" src="{%static 'assets/logo.svg' %}" alt="logo">
+        <div>
+            <ul class="navigation">
+                <li>
+                    <a href="#Home ">Home</a>
+                </li>
+                <li>
+                    <a href="#Portfolio">Portfolio</a>
+                </li>
+                <li>
+                    <a href="#About">About</a>
+                </li>
+                <li>
+                    <a href="#Contact">Contact</a>
+                </li>
+            </ul>
+            
+            <div class="line"></div>
+            <div class="auth">
+                <button class="login"><a class='links black' href="{% url 'account:login' %}">Login</a></button>
+                <button class="get_started"><span><a class='links white' href="#Pricing">Get started</a></span></button>
+            </div>
+        </div>
+        <div class="menu">
+            <img src="{% static 'assets/menu.svg' %}" alt="menu">
+        </div>
+    </header>
+    <div class="menu_wrapper">
+        <img class="close_menu" src="{% static 'assets/close.svg' %}" alt="close menu">
+        <ul class="navigation">
+            <li>
+                <a href="#Home" class="menu-a">Home</a>
+            </li>
+            <li>
+                <a href="#Portfolio" class="menu-a">Portfolio</a>
+            </li>
+            <li>
+                <a href="#Pricing" class="menu-a">Pricing</a>
+            </li>
+            <li>
+                <a href="#About" class="menu-a">About</a>
+            </li>
+            <li>
+                <a href="#Contact" class="menu-a">Contact</a>
+            </li>
+        </ul>
+    </div>
+    <div class="hero_section" id="Home">
+        <div class="elips"></div>
+        <div class="container">
+            <h1>
+                Create <span>High-Converting</span> Video <br/> Hooks Effortlessly
+            </h1>
+            <p class="hero_section_desktop_text">
+                Every Facebook advertiser knows the power of a great video hook. <br>
+                Now, with HooksMaster.io, you can
+                create winning hooks in minutes <br>
+                Without the hassle or expense of hiring video editors.
+            </p>
+            <p class="hero_section_mobile_text">
+                Every Facebook advertiser knows the power <br>
+                of a great video hook. Now, with <br>
+                HooksMaster.io, you can create winning <br>
+                hooks in minutes Without the hassle or <br>
+                expense of hiring video editors.
+            </p>
+            <a href="#Pricing"></a>
+            <button>
+                Get Started Now
+               <img src="{% static 'assets/arrow_right_dark.svg' %}" alt="arrow">
+            </button>
+            </a>
+        </div>
+        <div class="box">
+            <img class="paint_a" src="{% static 'assets/paint_a.svg' %}" alt="paint_a">
+            <img class="paint_b" src="{% static 'assets/paint_b.svg' %}" alt="paint_b">
+            <img class="paint_c" src="{% static 'assets/paint_c.svg' %}" alt="paint_c">
+        </div>
+    </div>
+    <div class="work_section">
+        <h1>How does it work?</h1>
+        <p>
+            It's that simple. With HooksMaster.io, you <br>
+            can test hooks rapidly, find winning ads <br>
+            faster, and skyrocket your Facebook ad <br>
+            ROI.
+        </p>
+        <div class="work_container">
+            <div class="mobile_block">
+                <div class="number">
+                    <span>1</span>
+                </div>
+                <div class="info">
+                    <h2>Prepare Your Hooks:</h2>
+                    <p>
+                        Type up your hooks in a CSV <br> file.
+                    </p>
+                </div>
+            </div>
+            <div class="mobile_block">
+                <div class="number">
+                    <span>2</span>
+                </div>
+                <div class="info">
+                    <h2>Select Video Clips:</h2>
+                    <p>
+                        Choose the video clips you <br> want to include.
+                    </p>
+                </div>
+            </div>
+            <div class="mobile_block">
+                <div class="number">
+                    <span>3</span>
+                </div>
+                <div class="info">
+                    <h2>Generate Hooks:</h2>
+                    <p>
+                        Click play and get brand <br> new hooks instantly.
+                    </p>
+                </div>
+            </div>
+            <div class="block">
+                <div class="box"></div>
+                <div class="info">
+                    <h1><span>1.</span> Prepare Your Hooks</h1>
+                    <p>
+                        Type your hooks into Google <br> sheets then paste the link onto <br> HooksMaster.io
+                    </p>
+                </div>
+            </div>
+            <div class="block">
+                <div class="info">
+                    <h1><span>2.</span> Select your Content</h1>
+                    <p>
+                        Choose what clip you want to <br> display on the video for the hook.
+                    </p>
+                </div>
+                <div class="box"></div>
+            </div>
+            <div class="block">
+                <div class="box"></div>
+                <div class="info">
+                    <h1><span>3.</span> Select AI Voiceover</h1>
+                    <p>
+                        From eleven labs paste your API key <br> in and select which voice ID you <br> want to use
+                    </p>
+                </div>
+            </div>
+            <div class="block">
+                <div class="info">
+                    <h1><span>4.</span> Customise The Hooks</h1>
+                    <p>
+                        Choose what Color you want the <br> hooks box and font to be
+                    </p>
+                </div>
+                <div class="box"></div>
+            </div>
+            <div class="block">
+                <div class="box"></div>
+                <div class="info">
+                    <h1><span>5.</span> Generate Your Hooks</h1>
+                    <p>
+                        Click “create” to create your <br> hooks and then download them
+                    </p>
+                </div>
+            </div>
+            <div class="block">
+                <div class="info">
+                    <h1><span>6.</span> Merge Into Creatives</h1>
+                    <p>
+                        Use our merging tool so you can <br> Marge your hooks onto your <br> existing creatives
+                    </p>
+                </div>
+                <div class="box"></div>
+            </div>
+        </div>
+    </div>
+    <div class="why_us_section">
+        <h1>Why HooksMaster.io?</h1>
+        <div class="container">
+            <div class="box">
+                <img src="{% static 'assets/clock.svg' %}" alt="clock">
+                <p>Save time and money compared to <br> hiring video editors</p>
+            </div>
+            <div class="box">
+                <img src="{% static 'assets/happy.svg' %}" alt="happy">
+                <p>Test hooks quickly to find winning <br> ads faster</p>
+            </div>
+            <div class="box">
+                <img src="{% static 'assets/technical_skills.svg' %}" alt="technical skills">
+                <p>Intuitive interface - no technical skills <br> required</p>
+            </div>
+            <div class="box">
+                <img src="{% static 'assets/cards.svg' %}" alt="cards">
+                <p>Hooks For Less Than You Pay Your <br> Video Editors</p>
+            </div>
+        </div>
+    </div>
+    <div class="hooks_section" id="Portfolio">
+        <div class="title">
+            <h1>Hooks Portfolio</h1>
+            <h4>Explore our gallery of successful hooks created by businesses just like yours.</h4>
+        </div>
+        <div class="container">
+            <div class="box">
+                <video width="320" height="240" controls poster="{% static 'assets/video/5.png' %}">
+                    <source src="{% static 'assets/video/Example%205.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="box">
+                <video width="320" height="240" controls poster="{% static 'assets/video/6.png' %}">
+                    <source src="{% static 'assets/video/Example%206.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="box">
+                <video width="320" height="240" controls poster="{% static 'assets/video/1.png' %}">
+                    <source src="{% static 'assets/video/Example%201.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        <div class="container">
+            <div class="box">
+                <video width="320" height="240" controls poster="{% static 'assets/video/2.png' %}">
+                    <source src="{% static 'assets/video/Example%202.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="box">
+                <video width="320" height="240" controls poster="{% static 'assets/video/3.png' %}">
+                    <source src="{% static 'assets/video/Example%203.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="box">
+                <video width="320" height="240" controls poster="{% static 'assets/video/4.png' %}">
+                    <source src="{% static 'assets/video/Example%204.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+    <div class="plan_section" id="Pricing">
+        <div class="title">
+            <h1>Choose a plan that suits for your business</h1>
+        </div>
+        <div class="prices">
+            <div class="card">
+                <h5>Starter</h5>
+                <h1>$197 <span>/month</span></h1>
+                <h6>$3.94/hook </h6>
+                <h4>
+                    <img src="{% static 'assets/blue_check_mark.svg' %}" alt="check mark">
+                    50 Hooks Per Month
+                </h4>
+                <button onclick="redirectToCheckout('starter')">
+                    Get Started
+                    <img src="{% static 'assets/arrow_right_dark.svg' %}" alt="arrow right">
+                </button>
+            </div>
+            <div class="card">
+                <span class="boosted">Most popular!</span>
+                <h5>Pro</h5>
+                <h1>$297 <span>/month</span></h1>
+                <h6>$2.47 /hook</h6>
+                <h4>
+                    <img src="{% static 'assets/white_check_mark.svg' %}" alt="check mark">
+                    120 Hooks per month
+                </h4>
+                <button onclick="redirectToCheckout('pro')">
+                    Get Started
+                    <img src="{% static 'assets/arrow_right_dark.svg' %}" alt="arrow right">
+                </button>
+            </div>
+            <div class="card">
+                <h5>Exclusive</h5>
+                <h1>$497 <span>/month</span></h1>
+                <h6>$1.65/hook</h6>
+                <h4>
+                    <img src="{% static 'assets/blue_check_mark.svg' %}" alt="check mark">
+                    300 Hooks per month
+                </h4>
+                <button onclick="redirectToCheckout('exclusive')">
+                    Get Started
+                    <img src="{% static 'assets/arrow_right_dark.svg' %}" alt="arrow right">
+                </button>
+            </div>
+        </div>
+        <div class="info">
+            <h4>All Plans Include</h4>
+            <ul>
+                <li>
+                    <img src="{% static 'assets/blue_check_mark.svg' %}" alt="check mark">
+                    Free Access To Our Video Merger So You Can Merge The Hooks To Your Creatives
+                </li>
+                <li>
+                    <img src="{% static 'assets/blue_check_mark.svg' %}" alt="check mark">
+                    Generates Hooks In Minutes
+                </li>
+                <li>
+                    <img src="{% static 'assets/blue_check_mark.svg' %}" alt="check mark">
+                    Cheaper Than Hiring Video Editors
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="about_section"  id="About">
+        <div class="who_we">
+            <h2>Who we are</h2>
+            <p>
+                At HooksMaster.io, we're passionate about helping businesses succeed with <br> Facebook advertising. Our
+                team
+                of experienced marketers and software <br> developers came together to create a tool that simplifies the
+                process of creating <br> high-converting video hooks. We understand the challenges advertisers face <br>
+                and are
+                committed to providing a solution that saves time, money, and effort <br> while delivering outstanding
+                results.
+            </p>
+        </div>
+        <div class="our_mission">
+            <h2>Our mission</h2>
+            <p>
+                Our mission is to empower advertisers of all sizes with the tools they need to <br> create compelling
+                video
+                ads that drive engagement, conversions, and revenue. <br> With HooksMaster.io, we're making it easier
+                than
+                ever to optimize your Facebook <br> ad performance and achieve your marketing goals.
+            </p>
+        </div>
+    </div>
+
+    <div class="contact_section" id="Contact">
+        <div class="info_block">
+            <h1>Let’s get in touch</h1>
+            <p class="info_block_desktop_p">
+                We're here to help! If you have any questions, concerns, or <br>
+                feedback about HooksMaster.io, please don't hesitate to <br>
+                reach out to our friendly support team.
+            </p>
+            <p class="info_block_mobile_p">
+                We're here to help! If you have any <br> questions, concerns, or
+                feedback about HooksMaster.io, please don't hesitate to <br>
+                reach out to our friendly support team.
+            </p>
+            <h5>Email</h5>
+            <h6>support@hooksmaster.io</h6>
+            <p class="info_block_desktop_p">
+                We strive to respond to all inquiries within 24 hours during <br>
+                business days. For technical support, please provide as <br>
+                much detail as possible about the issue you're experiencing, <br>
+                and our team will work diligently to resolve it.
+            </p>
+            <p class="info_block_mobile_p">
+                We strive to respond to all inquiries within <br>
+                24 hours during business days. For <br>
+                technical support, please provide as much <br>
+                detail as possible about the issue you're <br>
+                experiencing, and our team will work <br>
+                diligently to resolve it.
+            </p>
+        </div>
+        <div class="input_block">
+            <div class="wrapper">
+                <label for="full_name">Full Name</label>
+                <input id="full_name" type="text" placeholder="Enter Your Full Name">
+            </div>
+            <div class="wrapper">
+                <label for="email">Email address</label>
+                <input id="email" type="email" placeholder="Enter your Email address">
+            </div>
+            <div class="wrapper">
+                <label for="message">Write your message</label>
+                <textarea id="message" placeholder="Write Us Your Question Here..."></textarea>
+            </div>
+            <button>
+                Send Message
+                <img src="{% static 'assets/arrow_right_dark.svg' %}" alt="arrow">
+            </button>
+        </div>
+    </div>
+    <footer>
+        <div class="information">
+            <img src="{% static 'assets/white_logo.svg' %}" alt="logo">
+            <p class="desktop_p">
+                Every Facebook advertiser knows the power of a great <br>
+                video hook. Now, with HooksMaster.io, you can create <br>
+                winning hooks in minutes, without the hassle or <br>
+                expense of hiring video editors.
+            </p>
+            <p class="mobile_p">
+                Every Facebook advertiser knows the power of a <br>
+                great video hook. Now, with HooksMaster.io, you <br>
+                can create winning hooks in minutes, without the <br>
+                hassle or expense of hiring video editors.
+            </p>
+            <ul class="socials">
+                <li>
+                    <img src="{% static 'assets/facebook.svg' %}" alt="facebook">
+                </li>
+                <li>
+                    <img src="{% static 'assets/twitter.svg' %}" alt="twitter">
+                </li>
+                <li>
+                    <img src="{% static 'assets/linkedin.svg' %}" alt="linkedin">
+                </li>
+            </ul>
+        </div>
+        <div class="navigation_bar">
+            <div class="box">
+                <h5>Company</h5>
+                <ul>
+                    <li>
+                        <a href="#Home">Home</a>
+                    </li>
+                    <li>
+                        <a href="#Portfolio">Portfolio</a>
+                    </li>
+                    <li>
+                        <a href="#Pricing">Pricing</a>
+                    </li>
+                    <li>
+                        <a href="#About">About</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="box">
+                <h5>Help</h5>
+                <ul>
+                    <li>
+                        <a href="#Contact">Contact us</a>
+                    </li>
+                    <li>
+                        <a href="#About">About us</a>
+                    </li>
+                    <li>
+                        <a href="#">Terms & condition</a>
+                    </li>
+                    <li>
+                        <a href="#">Privacy policy</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</div>
+<script type="module" src="{% static 'main.js' %}"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  var stripe = Stripe('{{ STRIPE_PUBLISHER_KEY }}');
+
+  function redirectToCheckout(planType) {
+    fetch('/create-checkout-session/' + planType)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(sessionId) {
+        return stripe.redirectToCheckout({ sessionId: sessionId });
+      })
+      .then(function(result) {
+        if (result.error) {
+          alert(result.error.message);
+        }
+      });
+  }
+</script>
+</body>
+</html>

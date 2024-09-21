@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'input.css' %}">
+    <title>Control</title>
+</head>
+<body>
+<div class="root">
+    <header>
+        <img src="{% static 'assets/white_logo.svg' %}" alt="logo" onclick="window.location.href='{% url "account:home" %}'" style="cursor: pointer;">
+
+        <div class="account">
+            <h5>Credits Remaining: {{request.user.profile.credits  }}</h5>
+            <form action="{% url 'account:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout">Logout</button>
+            </form>
+        </div>
+    </header>
+    <div class="content">
+        <form class="block_a" action="{% url 'hooks:upload' %}" method="post" enctype="multipart/form-data">
+            
+            <h1>Upload and customize</h1>
+            <div class="box">
+                <div class="upload_file_wrapper">
+                    <h4>Hooks Content:</h4>
+                    
+                    <label for="hooks">
+                        <img src="{% static 'assets/upload_large.svg' %}" alt="upload">
+                        <span class="button">
+                                        <span>Click to upload</span> or drag and drop
+                                    </span>
+                        <span class="selected_file">No file chosen</span>
+                    </label>
+                    {{ form.hooks_content }}
+                </div>
+                
+                <div class="wrapper">
+                    <label for="google_link">Google Sheets Link:</label>
+                    {{ form.google_sheets_link }}
+                </div>
+                <div class="wrapper">
+                    <label for="api_key">Eleven Labs API Key:</label>
+                    {{ form.eleven_labs_api_key }}
+                </div>
+                <div class="wrapper">
+                    <label for="voice_id">Voice ID:</label>
+                    {{ form.voice_id }}
+                </div>
+            </div>
+            <h2>Customize your hook design</h2>
+            <div class="box">
+                <div class="color-picker-container">
+                    <label for="box_color">Main box color (Hex):</label>
+                    <div class="color-input-wrapper">
+                        {{ form.box_color }}
+                        <span class="color-value">#485AFF</span>
+                    </div>
+                </div>
+                <div class="color-picker-container">
+                    <label for="fontColor">Font color (Hex):</label>
+                    <div class="color-input-wrapper">
+                        {{ form.font_color }}
+                        <span class="color-value">#ffffff</span>
+                    </div>
+                </div>
+            </div>
+            {% csrf_token %}
+            <button type="submit">
+                Create
+                <img src="{% static 'assets/arrow_right_dark.svg' %}" alt="arrow">
+            </button>
+        </form>
+        <div class="block_b">
+            <h1>Tutorial</h1>
+            <div class="display tutorial">
+                <img class="play" src="{% static 'assets/play.svg' %}" alt="play">
+            </div>
+            <hr>
+            <h1>Preview</h1>
+            <div class="display preview">
+                <div class="head" id="textbg">
+                    <h1 id="text">This Is How Your Hook Text Will Look Like On The Video</h1>
+                </div>
+                <div class="info">
+                    {% if hook.hooks_content %}
+                        <video controls>
+                            <source src="{{ hook.hooks_content}}" type="video/mp4">
+                        </video>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'control.js' %}"></script>
+<script>
+    document.querySelector('#hooks').addEventListener('change', function (e) {
+        const fileName = e.target.files[0].name;
+        const selectedFileLabel = document.querySelector('.selected_file');
+        selectedFileLabel.textContent = fileName;
+    });
+</script>
+
+</body>
+</html>
