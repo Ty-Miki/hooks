@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'hooks.apps.HooksConfig',
     'payment.apps.PaymentConfig',
+    'merger.apps.MergerConfig',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,11 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = 'hooks:upload'
 LOGIN_URL = 'account:login'
 LOGOUT_URL = 'account:logout'
+
+# Paths
+UPLOAD_FOLDER = 'uploads'
+OUTPUT_FOLDER = 'output'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+if not os.path.exists(OUTPUT_FOLDER):
+    os.makedirs(OUTPUT_FOLDER)

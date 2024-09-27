@@ -1,0 +1,167 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'merger.css' %}">
+    <title>Video Concatenator</title>
+</head>
+<body>
+<div class="root">
+    <header>
+        <img src="{% static 'assets/white_logo.svg' %}" alt="logo" onclick="window.location.href='{% url 'account:home' %}'" style="cursor: pointer;">
+
+        <div class="account">
+            <h5>Megre Credits Remaining: {{ request.user.profile.merge_credits }}</h5>
+            <div class="user">
+                <img src="{% static 'assets/user.svg' %}" alt="user">
+            </div>
+        </div>
+    </header>
+    <!-- <div class="menu">
+        <ul>
+            <li class="name">Olivia Rhye</li>
+            <li class="email">olivia@example.com</li>
+            <li>View profile</li>
+            <li>Merge Credit left <span>{{ request.user.profile.merge_credits }}</span></li>
+            <li>Setting</li>
+            <li>Log out</li>
+        </ul>
+    </div> -->
+    <div class="content">
+        <div class="video_manager">
+            <h1>Video Merger</h1>
+            <form class="upload_files" action="{% url 'merger:upload_files' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="input_block">
+                    <div class="upload_file_wrapper">
+                        <h4>Upload Your Short Videos: <span>(Maximum 10)</span></h4>
+                        <label for="short_videos">
+                            <span class="button">
+                                <img src="{% static 'assets/upload_gray.svg' %}" alt="upload">
+                                Choose file
+                            </span>
+                        </label>
+                        <input id="short_videos" name="short_videos" type="file" accept="video/mp4,video/x-m4v,video/*" multiple>
+                        <p class="short-vid-info">
+                        <span id="uploadedCount">Uploaded: 0</span>
+                        <span id="remainingCount">Remaining: 10</span>
+                        </p>
+                    </div>
+    
+                    <div class="upload_file_wrapper">
+                        <h4>Upload Your Large Video: <span>(Maximum 1)</span></h4>
+                        <label for="large_videos">
+                            <span class="button">
+                                <img src="{% static 'assets/upload_gray.svg' %}" alt="upload">
+                                Choose file
+                            </span>
+                        </label>
+                        <input id="large_videos" name="large_videos" type="file" accept="video/mp4,video/x-m4v,video/*">
+                        <p id="largeVideoName">No large video uploaded</p>
+                    </div>
+                </div>
+                <button type="submit">Upload and Process</button>            
+            </form>
+        </div>
+    </div>
+</div>
+<!-- <script>
+    const user = document.querySelector( ".user" );
+    const menu = document.querySelector( ".menu" );
+    user.addEventListener( "click", function () {
+        if ( menu.style.display === "block" ) {
+            menu.style.display = "none"
+        } else {
+            menu.style.display = "block"
+        }
+    });
+</script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const shortVideosInput = document.getElementById("short_videos");
+        const selectedFiles = [];
+
+        shortVideosInput.addEventListener('change', function(event) {
+            // Append selected files to the list of already selected files
+            for (const file of event.target.files) {
+                selectedFiles.push(file);
+            }
+
+            // Create a DataTransfer object to store the new list of files
+            const dataTransfer = new DataTransfer();
+            for (const file of selectedFiles) {
+                dataTransfer.items.add(file);
+            }
+
+            // Replace the input's files with the new list of files
+            shortVideosInput.files = dataTransfer.files;
+
+            // Optionally log the selected files for debugging
+            console.log("Files selected: ", shortVideosInput.files);
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const shortVideosInput = document.getElementById("short_videos");
+        const largeVideoInput = document.getElementById("arge_video");
+
+        // Select the p elements for displaying counts and large video name
+        const uploadedCountDisplay = document.getElementById('uploadedCount');
+        const remainingCountDisplay = document.getElementById('remainingCount');
+
+        let selectedShortVideos = [];
+
+        // Handle short videos selection
+        shortVideosInput.addEventListener('change', function(event) {
+            // Reset the selectedShortVideos array to prevent recounting previous selections
+            selectedShortVideos = Array.from(event.target.files);
+
+            // Ensure only the first 10 files are counted
+            if (selectedShortVideos.length > 10) {
+                selectedShortVideos = selectedShortVideos.slice(0, 10);
+            }
+
+            // Disable the input if 10 files are uploaded
+            if (selectedShortVideos.length >= 10) {
+                shortVideosInput.disabled = true;
+            }
+
+            // Update the counts for uploaded and remaining videos
+            updateCountDisplay();
+        });
+
+
+        // Update the display of uploaded and remaining videos
+        function updateCountDisplay() {
+            const uploaded = selectedShortVideos.length;
+            const remaining = 10 - uploaded;
+
+            uploadedCountDisplay.textContent = `Uploaded: ${uploaded}`;
+            remainingCountDisplay.textContent = `Remaining: ${remaining}`;
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const largeVideoInput = document.getElementById("large_videos");
+        const largeVideoNameDisplay = document.getElementById('largeVideoName');
+
+        // Handle large video selection and display its name
+        largeVideoInput.addEventListener('change', function(event) {
+            const largeVideoFile = event.target.files[0];
+            if (largeVideoFile) {
+                largeVideoNameDisplay.textContent = `Selected: ${largeVideoFile.name}`;
+            } else {
+                largeVideoNameDisplay.textContent = "No large video uploaded";
+            }
+        });
+    });
+</script>
+</body>
+</html>
