@@ -2,17 +2,23 @@ import os
 import subprocess
 import zipfile
 import shutil
+import io
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.shortcuts import render
-from werkzeug.utils import secure_filename
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 import logging
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from .forms import VideoUploadForm
+import threading
+from hooks.tools.utils import generate_task_id
+from .models import MergeTask
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -74,9 +80,14 @@ def check_video_format_resolution(video_file):
         logging.error(f"Could not determine resolution for video: {video_file}")
         return None, None  # Or handle the case where no resolution is found
 
-def process_videos(short_videos, large_videos):
+def process_videos(task_id):
     logging.info("Starting video processing...")
     
+    # Load short video and large video form merge task
+    merge_task = MergeTask.objects.get(task_id=task_id)
+    short_videos = merge_task.short_video_path
+    large_videos =merge_task.large_video_paths
+
     # Use the resolution of the first large video as the reference
     reference_resolution = check_video_format_resolution(large_videos[0])
     logging.info(f"Reference resolution for preprocessing: {reference_resolution}")
@@ -102,18 +113,29 @@ def process_videos(short_videos, large_videos):
     for large_video in tqdm(large_videos, desc="Concatenating with large videos"):
         large_name = os.path.splitext(os.path.basename(large_video))[0]  # Extract the name of the large video without extension
         for short_video, short_name in zip(preprocessed_short_files, short_video_names):
+            temp_dict = {}
             final_output_name = f"{short_name}_{large_name}.mp4"
             final_output = os.path.join(settings.OUTPUT_FOLDER, final_output_name)
             concatenate_videos([short_video, large_video], final_output)
-            final_output_files.append(final_output)
+
+            video_name  = os.path.basename(final_output)
+            temp_dict['video_link'] = final_output
+            temp_dict['file_name'] = video_name
+
+            final_output_files.append(temp_dict)
     
     # Clean up temporary files
     for file in preprocessed_short_files:
         os.remove(file)
     
     logging.info("Video processing complete!")
-    return final_output_files
+    
+    # Update the merge task status
+    merge_task.status = 'completed'
+    merge_task.video_links = final_output_files
+    merge_task.save()
 
+@login_required
 def index(request):
     form = VideoUploadForm()
     return render(request, 'merger/index.html', {'form': form})
@@ -122,20 +144,14 @@ def index(request):
 @require_POST
 def upload_files(request):
 
-     # Check if the user has enough credits
-    user_profile = request.user.profile
-    if user_profile.merge_credits <= 0:
-        # You can change the url below to the stripe URL
-        # return redirect('hooks:no_credits')  # Redirect to an error page or appropriate view
-        return HttpResponse("You don't have enough merge credits, buy and try again!", status=404)
+    task_id = generate_task_id()
+    logging.info(f'Merge Task ID generated --> {task_id}')
     
+    MergeTask.objects.create(task_id=task_id, status='processing')
+    logging.info(f'A Merge Task object created for merge task id --> {task_id}')
+
     short_videos = request.FILES.getlist('short_videos')
     large_videos = request.FILES.getlist('large_videos')
-    
-    if not short_videos or not large_videos:
-        messages.error(request, 'No selected file')
-        print("No selected file")
-        return redirect('merger:index')
 
     short_video_paths = []
     large_video_paths = []
@@ -157,60 +173,105 @@ def upload_files(request):
             for chunk in file.chunks():
                 destination.write(chunk)
         large_video_paths.append(file_path)
-    # Process videos
-    output_files = process_videos(short_video_paths, large_video_paths)
 
-    merge_credits_used = len(short_video_paths)
+     # Update the merge task video paths
+
+    merge_task = MergeTask.objects.get(task_id=task_id)
+    merge_task.short_video_path = short_video_paths
+    merge_task.large_video_paths = large_video_paths
+    merge_task.save()
+
+    return redirect('merger:processing',
+                    task_id=task_id, 
+                    )  # Redirect to a processing page after form submission
+    
+
+@login_required    
+def processing(request, task_id):
+
+     # Check if the user has enough merge credits
+    merge_task = MergeTask.objects.get(task_id=task_id)
+    user_profile = request.user.profile
+    merge_credits_used = len(merge_task.short_video_path)
+
     if user_profile.merge_credits < merge_credits_used:
         # You can change the url below to the stripe URL
         # return redirect('hooks:no_credits')  # Redirect to an error page or appropriate view
         return HttpResponse("You don't have enough merge credits, buy and try again!", status=404)
     
+    thread = threading.Thread(target=process_videos, args=(task_id,))
+    thread.start()
+
     user_profile.merge_credits -= merge_credits_used
     user_profile.save()
     logging.info(f"Used {merge_credits_used} merge credits")
+
+    return render(request, 
+                'merger/processing.html',
+                {'task_id': task_id})
+
+@login_required
+def check_task_status(request, task_id):
+    task = get_object_or_404(MergeTask, task_id=task_id)
     
-    if not output_files:
-        logging.error("No output files were generated by the video processing function.")
-        messages.error(request, 'No output files to zip')
-        return redirect('merge:index')
+    # Return task status and video links (if processing is completed)
+    return JsonResponse({
+        'status': task.status,
+        'video_links': task.video_links if task.status == 'completed' else None
+    })
 
-    logging.info(f"Output files to be zipped: {output_files}")
+@login_required 
+def processing_successful(request, task_id):
+     task = get_object_or_404(MergeTask, task_id=task_id)
 
-    # Create a zip file of the output videos
-    zip_filename = os.path.join(settings.OUTPUT_FOLDER, 'final_videos.zip')
+     return render(request, 
+                'merger/processing_successful.html', 
+                {'task_id': task_id,
+                'video_links': task.video_links})
 
-    try:
-        with zipfile.ZipFile(zip_filename, 'w') as zipf:
-            for file in output_files:
-                if os.path.exists(file):
-                    logging.info(f"Adding {file} to zip file.")
-                    zipf.write(file, os.path.basename(file))
-                else:
-                    logging.warning(f"File {file} does not exist and will not be added to the zip file.")
-        
-        logging.info(f"Zip file created successfully: {zip_filename}")
-        
-        # Return the zip file for download
-        if os.path.exists(zip_filename):
-            with open(zip_filename, 'rb') as zip_file:
-                response = HttpResponse(zip_file.read(), content_type='application/zip')
-                response['Content-Disposition'] = f'attachment; filename={os.path.basename(zip_filename)}'
+@login_required 
+def download_video(request, videopath):
+    # Decode the path
+    # videopath = os.path.join(settings.BASE_DIR.parent, videopath)
 
-            # Cleanup: Remove uploaded and output files after sending the response
-            shutil.rmtree(settings.UPLOAD_FOLDER, ignore_errors=True)
-            os.makedirs(settings.UPLOAD_FOLDER)
-            shutil.rmtree(settings.OUTPUT_FOLDER, ignore_errors=True)
-            os.makedirs(settings.OUTPUT_FOLDER)
+    
+    # Check if the video file exists
+    if not os.path.exists(videopath):
+        return HttpResponse("Video not found", status=404)
+
+    # Return the file as a download
+    response = FileResponse(open(videopath, 'rb'), content_type='video/mp4')
+    response['Content-Disposition'] = f'attachment; filename="{os.path.basename(videopath)}"'
+    
+    return response
+
+@login_required 
+def download_zip(request, task_id):
+
+    task = get_object_or_404(MergeTask, task_id=task_id)
+    videos = task.video_links
+
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+        for idx, video in enumerate(videos):
+            if os.path.exists(video['video_link']):
+                file_name = os.path.basename(video['video_link'])
+
+                # Add the file to the zip archive
+                zip_file.write(video['video_link'], file_name)
+
+    zip_buffer.seek(0)
+
+    # Create a response with the zip file for downloading
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="final_videos.zip"'
+    
+    # Cleanup: Remove uploaded and output files after sending the response
+    shutil.rmtree(settings.UPLOAD_FOLDER, ignore_errors=True)
+    os.makedirs(settings.UPLOAD_FOLDER)
+    shutil.rmtree(settings.OUTPUT_FOLDER, ignore_errors=True)
+    os.makedirs(settings.OUTPUT_FOLDER)
             
-            logging.info("Temporary files cleaned up successfully.")
-            return response
-        else:
-            logging.error("Zip file was not created successfully.")
-            messages.error(request, 'Failed to create zip file')
-            return redirect('merger:index')
-
-    except Exception as e:
-        logging.error(f"Failed to create zip file: {e}")
-        messages.error(request, 'An error occurred while creating the zip file')
-        return redirect('merger:index')
+    logging.info("Temporary files cleaned up successfully.")
+    return response

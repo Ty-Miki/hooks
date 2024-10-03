@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'processing_successful.css' %}">
+    <title>Merge success</title>
+    
+</head>
+<body>
+<div class="root">
+    <header>
+        <img src="{% static 'assets/white_logo.svg' %}" alt="logo" onclick="window.location.href='{% url "account:home" %}'" style="cursor: pointer;">
+
+        <div class="account">
+            <h5>Credits Remaining: {{ request.user.profile.merge_credits }}</h5>
+        </div>
+    </header>
+    <div class="content">
+        <div class="success_block">
+            <div class="head">
+                <img src="{% static 'assets/arrow_left.svg' %}" alt="arrow">
+                <h5>Success</h5>
+            </div>
+                {% if video_links %}
+                    <ul class="info_block">
+                        {% for video in video_links %}
+                            <li>
+                                <a href="{% url 'merger:download_output' videopath=video.video_link %}">{{ video.file_name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <button onclick="window.location.href='{% url 'merger:download_zip' task_id=task_id %}'">Download All as Zip</button>
+                    <a href="{% url 'hooks:upload' %}" id="merger">Go to hooks</a>
+                {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -141,8 +141,8 @@ LOGIN_URL = 'account:login'
 LOGOUT_URL = 'account:logout'
 
 # Paths
-UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'output'
+UPLOAD_FOLDER = '/media/uploads'
+OUTPUT_FOLDER = '/media/output'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 if not os.path.exists(OUTPUT_FOLDER):

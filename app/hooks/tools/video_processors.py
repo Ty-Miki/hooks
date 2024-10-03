@@ -174,7 +174,6 @@ def create_custom_text_clip(hook_text, OUT_VIDEO_WIDTH, OUT_VIDEO_HEIGHT, top_bo
 def process_audio_on_videos(row, video_files, idx, input_df, hook_number, hook_text, num_videos_to_use, audio_clip, OUT_VIDEO_WIDTH, OUT_VIDEO_HEIGHT, output_videos_folder, total_rows, task_id, top_box_color, default_text_color, word_color_data,audio_file=None):
     # Remove underscores from the hook text for display
     cleaned_hook_text = hook_text.replace('_', '')
-    # import pdb;pdb.set_trace()
 
     row['Input Video Filename'] = [os.path.basename(considered_video) for considered_video in video_files]
     input_df.at[idx, 'Input Video Filename'] = row['Input Video Filename']
@@ -189,18 +188,35 @@ def process_audio_on_videos(row, video_files, idx, input_df, hook_number, hook_t
     logging.debug(f"Audio clip duration: {audio_clip.duration}, num_videos_to_use: {num_videos_to_use}")
 
     for considered_vid in video_files:
-        # import  pdb;pdb.set_trace()
-        logging.info('Creating A VideoFileClip instnce')
-        video_clip = VideoFileClip(considered_vid).subclip(0, each_video_duration)
-        logging.info('Created a VideoFileClip instance')
-        
-        # Apply cropping to maintain aspect ratio without distortion
-        logging.info('Using the crop_to_aspect_ratio method')
-        video_clip = crop_to_aspect_ratio(video_clip, OUT_VIDEO_WIDTH, OUT_VIDEO_HEIGHT)
-        logging.info('Used te crop_to_aspect_ration method')
+        try:
+            # Ensure the video file exists
+            if not os.path.exists(considered_vid):
+                logging.error(f"Video file {considered_vid} does not exist.")
+                continue
 
-        video_clips.append(video_clip)
+            # Log and process the video
+            logging.info(f'Processing video: {considered_vid}')
+            video_clip = VideoFileClip(considered_vid).subclip(0, each_video_duration)
 
+            # Check if the video clip has valid duration
+            if video_clip.duration <= 0:
+                logging.error(f"Video {considered_vid} has invalid duration {video_clip.duration}. Skipping.")
+                continue
+
+            # Apply cropping to maintain aspect ratio without distortion
+            video_clip = crop_to_aspect_ratio(video_clip, OUT_VIDEO_WIDTH, OUT_VIDEO_HEIGHT)
+
+            # Add the clip to the list of video clips
+            video_clips.append(video_clip)
+        except Exception as e:
+            logging.error(f"Error processing video {considered_vid}: {e}")
+            continue
+    
+    # Ensure there are valid clips to concatenate
+    if not video_clips:
+        logging.error("No valid video clips were found for concatenation.")
+        return None
+    
     logging.info('Concatenating videos')
     final_video_clip = concatenate_videoclips(video_clips)
     logging.info('Concatenated videos')
@@ -213,6 +229,7 @@ def process_audio_on_videos(row, video_files, idx, input_df, hook_number, hook_t
         specific_word_color_data = word_color_data[idx]
     else:
         specific_word_color_data = []  # Fallback to an empty list if out of range (for safety)
+
     logging.info(f"Specific word color data: {specific_word_color_data}")
     # Pass specific_word_color_data to the custom text clip creation
     logging.info('Using the create_custom_text_clip method')
@@ -233,4 +250,4 @@ def process_audio_on_videos(row, video_files, idx, input_df, hook_number, hook_t
 
     final_clip.write_videofile(output_video_filename, temp_audiofile=os.path.join(output_videos_folder, f"temp-audio_{idx}.m4a"), remove_temp=False, codec='libx264', audio_codec="aac")
 
-    logging.info(f"Method used successfully")
+    logging.info(f"Video processing completed successfully")

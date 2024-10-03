@@ -1,12 +1,10 @@
 import logging
 import tempfile
 import os
-from django.contrib import messages
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, FileResponse
-from django.conf import settings
 
 from .forms import HookForm
 
@@ -26,14 +24,9 @@ import io
 import requests
 from .tools.spreadsheet_extractor import fetch_google_sheet_data
 
-# from moviepy.config import change_settings
-# change_settings({"IMAGEMAGICK_BINARY": "/usr/bin/convert"})  # Adjust the path if needed
-
 logging.basicConfig(level=logging.DEBUG)
 
 def background_processing(task_id, user_profile):
-    import tempfile
-    import logging
 
     try:
         temp_dir = tempfile.mkdtemp(prefix=f"task_{task_id}_")
@@ -77,7 +70,7 @@ def upload_hook(request):
             hook.parallel_processing = parallel_processing
             hook.save()
             
-            return redirect('hooks:processing', task_id=task_id)  # Redirect to a success page after form submission
+            return redirect('hooks:processing', task_id=task_id)  # Redirect to a processing page after form submission
     else:
         form = HookForm()
 
