@@ -34,7 +34,7 @@
                         {% endfor %}
                     </ul>
                     <button onclick="window.location.href='{% url 'merger:download_zip' task_id=task_id %}'">Download All as Zip</button>
-                    <a href="{% url 'hooks:upload' %}" id="merger">Go to hooks</a>
+                    <a href="{% url 'hooks:upload' %}" id="merger">Create More Hooks</a>
                 {% endif %}
         </div>
     </div>
