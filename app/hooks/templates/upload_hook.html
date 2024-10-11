@@ -160,7 +160,7 @@
                     toggleSubmitButton();
                 },
                 error: function(xhr, status, error) {
-                    $('#google_link_error').text('An unexpected error occurred. Please try again.');
+                    $('#google_link_error').text('An Unexpected Error Occurred. Please Try Again.');
                     isGoogleSheetValid = false;
                     toggleSubmitButton();
                 }
@@ -193,14 +193,14 @@
                     toggleSubmitButton();
                 },
                 error: function(xhr, status, error) {
-                    $('#api_key_error').text('An unexpected error occurred. Please try again.');
+                    $('#api_key_error').text('An Unexpected Error Occurred. Please try again.');
                     isApiKeyValid = false;
                     toggleSubmitButton();
                 }
             });
         } else {
             // If either API key or voice ID is missing, disable the submit button
-            $('#api_key_error').text('API key and Voice ID are required.');
+            $('#api_key_error').text('API Key And Voice ID Are Required.');
             isApiKeyValid = false;
             toggleSubmitButton();
         }

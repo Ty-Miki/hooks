@@ -42,13 +42,13 @@ def fetch_google_sheet_data(google_sheet_link):
         return sheet_values
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")
-        raise Exception(f"Spreadsheet not found, please use another link")
+        raise Exception(f"Spreadsheet Not Found, Please Use Another Link")
     except ValueError as ve:
         logger.error(f"Error extracting spreadsheet ID: {ve}")
-        raise Exception(f"Your spreadshet ID is incorrect")
+        raise Exception(f"Your Spreadsheet ID Is Incorrect")
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        raise Exception(f"Unexpected error happend, please try again later")
+        raise Exception(f"Unexpected Error Happend, Please Try Again Later")
 
 # Fetch data from Google Sheets API
 def fetch_google_sheet_data_with_formatting(spreadsheet_id, api_key):

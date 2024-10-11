@@ -197,11 +197,11 @@ def validate_api_key(request):
                 if 'status' in error_detail and error_detail['status'] == 'quota_exceeded':
                     return JsonResponse({
                         'valid': False, 
-                        'error': f"Quota exceeded: {error_detail.get('message', 'Insufficient credits')}"
+                        'error': f"Quota Exceeded: {error_detail.get('message', 'Insufficient credits')}"
                     })
                 else:
-                    return JsonResponse({'valid': False, 'error': "Invalid API key"})
+                    return JsonResponse({'valid': False, 'error': "Invalid API Key"})
             else:
-                return JsonResponse({'valid': False, 'error': f"API request failed with status code {response.status_code}"})
+                return JsonResponse({'valid': False, 'error': f"API Request Failed With Status Code {response.status_code}"})
         except requests.exceptions.RequestException as e:
-            return JsonResponse({'valid': False, 'error': 'Error connecting to Eleven Labs API'})
+            return JsonResponse({'valid': False, 'error': 'Error Connecting To Eleven Labs API'})
