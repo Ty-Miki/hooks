@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Subscription Dashboard</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+  <!-- Preconnecting to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" type="text/css" href="{% static 'hooksmaster.css' %}" media="screen" />
+  <link rel="stylesheet" type="text/css" href="{% static 'Responsive.css' %}" media="screen" />
+</head>
+
+<body>
+  <!-- Header Section Start -->
+  <header class="admin-header">
+    <div class="container">
+      <div class="header-two">
+        <div class="hm-logo text-center">
+          <img src="{% static 'assets/white_logo.svg' %}" alt="VSL Logo" onclick="window.location.href='{% url 'account:home' %}'" style="cursor: pointer;"/>
+        </div>
+        <div class="header-profile">
+          <div class="credit-score">
+            <span>Credits Remaining: </span> <span>{{request.user.profile.credits  }}</span>
+          </div>
+          <a href="#!" class="profile-icn">
+            <img src="{% static 'assets/user.svg' %}" alt="User Profile" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- Header Section End -->
+
+  <div class="menu">
+    <ul>
+        <li onclick="window.location.href='{% url "hooks:upload" %}'">Create hooks</li>
+        <li>Credit left <span>{{request.user.profile.credits  }}</span></li>
+        <li onclick="window.location.href='{% url "account:logout" %}'">Logout</li>
+    </ul>
+  </div>
+
+
+  <!-- Subscription Information Start -->
+  <div class="content">
+    <div class="text">
+      <p class="sub-p">Subscription Details</p>
+      <p class="bill">Manage Billing Info</p>
+    </div>
+    <div class="for-border">
+      <div class="plan">
+        <p class="current-text">Current Plan</p>
+        <p class="btn">Exclusive</p>
+      </div>
+      <div class="plan subs">
+        <p class="sub-text">Subscription Status</p>
+        <p class="act">Active</p>
+      </div>
+      <div class="credit">
+        <p class="cr-usage">Credit Usage</p>
+        <div class="credit-text">
+          <p>Any unused credit will roll over to the next month</p>
+          <p>200/500 Used (Rest in 24 Days) </p>
+        </div>
+        <!-- <div class="bar"></div> -->
+        <div class="bar">
+          <div class="bar-fill"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- Subscription Information End -->
+
+  <!-- Additional Credit Purchase Section Start -->
+  <div class="second-main">
+    <div class="heading">Need More Hooks?</div>
+    <p>
+      Running low on hooks this month? Add more to your plan, with a minimum of 5, and keep creating high-converting
+      video hooks effortlessly.
+    </p>
+
+  </div>
+
+  <div class="credit-box">
+    <div class="box-cont">
+      <p class="cr">Buy More Hooks Credit</p>
+      <p class="dollar">$5 Each</p>
+      <input type="text" name="credit" id="credit" placeholder="Enter the amount of credits" />
+      <button>Buy</button>
+    </div>
+    <div class="box-cont">
+      <p class="cr">Buy More Merger Credit</p>
+      <p class="dollar">$5 Each</p>
+      <input type="text" name="credit" id="credit" placeholder="Enter the amount of credits" />
+      <button>Buy</button>
+    </div>
+  </div>
+  <!-- Additional Credit Purchase Section End -->
+
+  <!-- Subscription Plans Section Start -->
+  <div class="main-head">
+    <h1>Choose a plan that suits for your business</h1>
+  </div>
+
+  <div class="plans">
+    <!-- Starter Plan -->
+    <div class="box">
+      <p class="box-head">Starter</p>
+      <div class="price">
+        <h1 class="pro">$197</h1><span>/Month</span>
+      </div>
+      <p class="p-cent">$3.94/hook</p>
+      <p id="p" class="pb"><i class="fa-solid fa-check i-blue"></i> 50 Hooks Per Month</p>
+      <button>Downgrade Subscription</button>
+    </div>
+
+    <!-- Growth Plan -->
+    <div class="box">
+      <p class="box-head">Pro</p>
+      <div class="price">
+        <h1 class="pro">$297</h1><span>/Month</span>
+      </div>
+      <p class="p-cent">$2.47 /hook</p>
+      <p id="p" class="pb"><i class="fa-solid fa-check"></i> 120 Hooks per month</p>
+      <button>Downgrade Subscription</button>
+    </div>
+
+    <!-- Pro Plan -->
+    <div class="box excl">
+      <p class="box-head box-head2">Exclusive</p>
+      <div class="price">
+        <h1>$747</h1><span>/Month</span>
+      </div>
+      <p class="p-excl ">$1.4 9/hook</p>
+      <p id="p"><i class="fa-solid fa-check fa-check2"></i>500 Hooks per month</p>
+      <button id="up">Cancel Subscription</button>
+    </div>
+  </div>
+  <!-- Subscription Plans Section End -->
+
+<script>
+    const user = document.querySelector( ".profile-icn" );
+    const menu = document.querySelector( ".menu" );
+    user.addEventListener( "click", function () {
+        if ( menu.style.display === "block" ) {
+            menu.style.display = "none"
+        } else {
+            menu.style.display = "block"
+        }
+    });
+</script>
+</body>
+
+</html>

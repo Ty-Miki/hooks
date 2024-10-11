@@ -25,6 +25,7 @@ urlpatterns = [
     path('hooks/', include('hooks.urls', namespace='hooks')),
     path('payment/', include('payment.urls', namespace='payment')),
     path('merge/', include('merger.urls', namespace='merger')),
+    path('subscriptions/', include('manage_subs.urls', namespace='subs')),
 ]
 
 if settings.DEBUG:

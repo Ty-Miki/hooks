@@ -197,3 +197,22 @@ button {
     }
 }
 
+/* Update the notification design here */
+.messages {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.success {
+    color: #3b9643;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    margin-bottom: 7px;
+}
+
+.error {
+    color: #ee6e68;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    margin-bottom: 7px;
+}

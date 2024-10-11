@@ -24,6 +24,8 @@ import io
 import requests
 from .tools.spreadsheet_extractor import fetch_google_sheet_data
 
+
+
 logging.basicConfig(level=logging.DEBUG)
 
 def background_processing(task_id, user_profile):

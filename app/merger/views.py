@@ -110,23 +110,28 @@ def process_videos(task_id):
     final_output_files = []
 
     # Concatenate each large video with each preprocessed short video
-    for large_video in tqdm(large_videos, desc="Concatenating with large videos"):
-        large_name = os.path.splitext(os.path.basename(large_video))[0]  # Extract the name of the large video without extension
-        for short_video, short_name in zip(preprocessed_short_files, short_video_names):
-            temp_dict = {}
-            final_output_name = f"{short_name}_{large_name}.mp4"
-            final_output = os.path.join(settings.OUTPUT_FOLDER, final_output_name)
-            concatenate_videos([short_video, large_video], final_output)
+    with ThreadPoolExecutor() as executor:
+        concat_futures = []
+        for large_video in tqdm(large_videos, desc="Concatenating with large videos"):
+            large_name = os.path.splitext(os.path.basename(large_video))[0]  # Extract the name of the large video without extension
+            for short_video, short_name in zip(preprocessed_short_files, short_video_names):
+                temp_dict = {}
+                final_output_name = f"{short_name}_{large_name}.mp4"
+                final_output = os.path.join(settings.OUTPUT_FOLDER, final_output_name)
 
-            video_name  = os.path.basename(final_output)
-            temp_dict['video_link'] = final_output
-            temp_dict['file_name'] = video_name
+                # Submit concatenation task to thread pool
+                concat_futures.append(executor.submit(concatenate_videos, [short_video, large_video], final_output))
 
-            final_output_files.append(temp_dict)
-    
-    # Clean up temporary files
-    for file in preprocessed_short_files:
-        os.remove(file)
+                # Store video details
+                video_name = os.path.basename(final_output)
+                temp_dict['video_link'] = final_output
+                temp_dict['file_name'] = video_name
+
+                final_output_files.append(temp_dict)
+        
+        # Wait for all concatenation tasks to complete
+        for future in concat_futures:
+            future.result()  # ensure each concatenation is completed
     
     logging.info("Video processing complete!")
     
@@ -151,6 +156,7 @@ def upload_files(request):
     logging.info(f'A Merge Task object created for merge task id --> {task_id}')
 
     short_videos = request.FILES.getlist('short_videos')
+    logging.info(f'Short vids uploaded: {short_videos}')
     large_videos = request.FILES.getlist('large_videos')
 
     short_video_paths = []
@@ -165,6 +171,7 @@ def upload_files(request):
                 destination.write(chunk)
         short_video_paths.append(file_path)
     
+    logging.info(f'Short video paths: {short_video_paths}')
     # Save uploaded large videos
     for file in large_videos:
         filename = file.name
@@ -269,9 +276,9 @@ def download_zip(request, task_id):
     
     # Cleanup: Remove uploaded and output files after sending the response
     shutil.rmtree(settings.UPLOAD_FOLDER, ignore_errors=True)
-    os.makedirs(settings.UPLOAD_FOLDER)
+    os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
     shutil.rmtree(settings.OUTPUT_FOLDER, ignore_errors=True)
-    os.makedirs(settings.OUTPUT_FOLDER)
+    os.makedirs(settings.OUTPUT_FOLDER, exist_ok=True)
             
     logging.info("Temporary files cleaned up successfully.")
     return response

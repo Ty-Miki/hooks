@@ -5,7 +5,7 @@ import threading
 
 from tqdm import tqdm
 import pandas as pd
-from moviepy.editor import AudioFileClip, VideoFileClip
+from moviepy.editor import AudioFileClip
 
 from django.core.cache import cache
 from django.http import JsonResponse
@@ -16,6 +16,8 @@ from .utils import hex_to_rgb, handle_task_cancellation, delete_temp_dir
 from .spreadsheet_extractor import fetch_google_sheet_data, extract_word_color_data
 from .audio_processors import process_audios
 from .video_processors import process_audio_on_videos
+
+from hooks.models import Task
 
 logging.basicConfig(level=logging.DEBUG)
 canceled_tasks = set()
@@ -104,8 +106,6 @@ def process(params):
                     hook.join()
                 all_hooks.clear()
                 current_thread_count = 0
-            # process_audio_on_videos(row, video_files_to_use, idx, input_df, hook_number, hook_text, num_videos_to_use, audio_clip, OUT_VIDEO_WIDTH, OUT_VIDEO_HEIGHT, output_videos_folder, total_rows, task_id, top_box_color, default_text_color, word_color_data)
-            # logging.info(f"Processed video for hook {hook_number}")
         for hook in all_hooks:
             try:
                 hook.join()

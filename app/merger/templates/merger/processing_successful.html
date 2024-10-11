@@ -17,8 +17,18 @@
 
         <div class="account">
             <h5>Credits Remaining: {{ request.user.profile.merge_credits }}</h5>
+            <div class="user">
+                <img src="{% static 'assets/user.svg' %}" alt="user">
+            </div>
         </div>
     </header>
+    <div class="menu">
+        <ul>
+            <li onclick="window.location.href='{% url "subs:home" %}'">Manage Subscription</li>
+            <li>Credit left <span>{{request.user.profile.merge_credits  }}</span></li>
+            <li onclick="window.location.href='{% url "account:logout" %}'">Logout</li>
+        </ul>
+    </div>
     <div class="content">
         <div class="success_block">
             <div class="head">
@@ -34,10 +44,21 @@
                         {% endfor %}
                     </ul>
                     <button onclick="window.location.href='{% url 'merger:download_zip' task_id=task_id %}'">Download All as Zip</button>
-                    <a href="{% url 'hooks:upload' %}" id="merger">Go to hooks</a>
+                    <a href="{% url 'hooks:upload' %}" id="merger">Create more hooks</a>
                 {% endif %}
         </div>
     </div>
 </div>
+<script>
+    const user = document.querySelector( ".user" );
+    const menu = document.querySelector( ".menu" );
+    user.addEventListener( "click", function () {
+        if ( menu.style.display === "block" ) {
+            menu.style.display = "none"
+        } else {
+            menu.style.display = "block"
+        }
+    });
+</script>
 </body>
 </html>

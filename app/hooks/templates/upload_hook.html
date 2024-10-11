@@ -16,12 +16,22 @@
 
         <div class="account">
             <h5>Credits Remaining: {{request.user.profile.credits  }}</h5>
-            <form action="{% url 'account:logout' %}" method="post">
+            <!-- <form action="{% url 'account:logout' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="logout">Logout</button>
-            </form>
+            </form> -->
+            <div class="user">
+                <img src="{% static 'assets/user.svg' %}" alt="user" id="user">
+            </div>
         </div>
     </header>
+    <div class="menu">
+        <ul>
+            <li onclick="window.location.href='{% url "subs:home" %}'">Manage Subscription</li>
+            <li>Credit left <span>{{request.user.profile.credits  }}</span></li>
+            <li onclick="window.location.href='{% url "account:logout" %}'">Logout</li>
+        </ul>
+    </div>
     <div class="content">
         <form class="block_a" action="{% url 'hooks:upload' %}" method="post" enctype="multipart/form-data">
             
@@ -48,13 +58,14 @@
                 <div class="wrapper">
                     <label for="api_key">Eleven Labs API Key:</label>
                     {{ form.eleven_labs_api_key }}
-                    <span id="api_key_error" class='error' ></span>  <!-- Error message -->
                 </div>
                 <div class="wrapper">
                     <label for="voice_id">Voice ID:</label>
                     {{ form.voice_id }}
+                    <span id="api_key_error" class='error' ></span>  <!-- Error message -->
                 </div>
             </div>
+
             <h2>Customize your hook design</h2>
             <div class="box">
                 <div class="color-picker-container">

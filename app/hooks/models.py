@@ -27,7 +27,7 @@ class Task(models.Model):
     task_id = models.CharField(max_length=255)
     status = models.CharField(max_length=20, default='processing')
     video_links = models.JSONField(null=True, blank=True)
-
+    
     def __str__(self) -> str:
         return self.status
 

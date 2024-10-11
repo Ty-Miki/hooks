@@ -20,20 +20,17 @@
             </div>
         </div>
     </header>
-    <!-- <div class="menu">
+    <div class="menu">
         <ul>
-            <li class="name">Olivia Rhye</li>
-            <li class="email">olivia@example.com</li>
-            <li>View profile</li>
-            <li>Merge Credit left <span>{{ request.user.profile.merge_credits }}</span></li>
-            <li>Setting</li>
-            <li>Log out</li>
+            <li onclick="window.location.href='{% url "subs:home" %}'">Manage Subscription</li>
+            <li>Credit left <span>{{request.user.profile.merge_credits  }}</span></li>
+            <li onclick="window.location.href='{% url "account:logout" %}'">Logout</li>
         </ul>
-    </div> -->
+    </div>
     <div class="content">
         <div class="video_manager">
             <h1>Video Merger</h1>
-            <form class="upload_files" action="{% url 'merger:upload_files' %}" method="post" enctype="multipart/form-data">
+            <form id="uploadForm" class="upload_files" action="{% url 'merger:upload_files' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="input_block">
                     <div class="upload_file_wrapper">
@@ -44,7 +41,7 @@
                                 Choose file
                             </span>
                         </label>
-                        <input id="short_videos" name="short_videos" type="file" accept="video/mp4,video/x-m4v,video/*" multiple>
+                        <input id="short_videos" name="short_videos" type="file" accept="video/mp4,video/x-m4v,video/*" multiple required>
                         <p class="short-vid-info">
                         <span id="uploadedCount">Uploaded: 0</span>
                         <span id="remainingCount">Remaining: 10</span>
@@ -59,16 +56,30 @@
                                 Choose file
                             </span>
                         </label>
-                        <input id="large_videos" name="large_videos" type="file" accept="video/mp4,video/x-m4v,video/*">
+                        <input id="large_videos" name="large_videos" type="file" accept="video/mp4,video/x-m4v,video/*" required>
                         <p id="largeVideoName">No large video uploaded</p>
                     </div>
                 </div>
-                <button type="submit">Upload and Process</button>            
+                
+                <p id="error-message" style="color: red; display: none; font-size: small;">You can only upload a maximum of 10 short videos. refresh and try again.</p>
+
+                <!-- Progress bar -->
+                <div id="progress-container" style="display: none;">
+                    <div class="progress-bar-text">
+                        <span class="uploading-text">Uploading</span>
+                        <span id="progress-percentage" class="percentage-text">0%</span>
+                    </div>
+                    <div id="progress-bar">
+                        <div id="progress"></div>
+                    </div>
+                </div>
+
+                <button id="submit" type="submit">Upload and Process</button>   
             </form>
         </div>
     </div>
 </div>
-<!-- <script>
+<script>
     const user = document.querySelector( ".user" );
     const menu = document.querySelector( ".menu" );
     user.addEventListener( "click", function () {
@@ -78,7 +89,7 @@
             menu.style.display = "block"
         }
     });
-</script> -->
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const shortVideosInput = document.getElementById("short_videos");
@@ -107,8 +118,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const submitButton = document.getElementById("submit")
         const shortVideosInput = document.getElementById("short_videos");
-        const largeVideoInput = document.getElementById("arge_video");
+        const largeVideoInput = document.getElementById("large_video");
+        const errorMessage = document.getElementById('error-message');
 
         // Select the p elements for displaying counts and large video name
         const uploadedCountDisplay = document.getElementById('uploadedCount');
@@ -121,15 +134,16 @@
             // Reset the selectedShortVideos array to prevent recounting previous selections
             selectedShortVideos = Array.from(event.target.files);
 
-            // Ensure only the first 10 files are counted
-            if (selectedShortVideos.length > 10) {
-                selectedShortVideos = selectedShortVideos.slice(0, 10);
-            }
-
             // Disable the input if 10 files are uploaded
-            if (selectedShortVideos.length >= 10) {
+            if (selectedShortVideos.length > 10) {
                 shortVideosInput.disabled = true;
-            }
+                submitButton.disabled = true;
+                errorMessage.style.display = 'block'; 
+            } else {
+            shortVideosInput.disabled = false;
+            submitButton.disabled = false;
+            errorMessage.style.display = 'none';  // Hide the error message if under the limit
+        }
 
             // Update the counts for uploaded and remaining videos
             updateCountDisplay();
@@ -162,6 +176,43 @@
             }
         });
     });
+</script>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+    e.preventDefault();  // Prevent default form submission
+    
+    const formData = new FormData(this);  // Create form data
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+    
+    // Display progress container when uploading starts
+    document.getElementById('progress-container').style.display = 'block';
+
+    // Update progress bar and percentage
+    xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            document.getElementById('progress').style.width = percentComplete + '%';
+            document.getElementById('progress-percentage').innerText = percentComplete + '%';
+        }
+    };
+
+    // After the upload finishes
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Redirect to the processing page (as in your view)
+            window.location.href = xhr.responseURL;
+        } else {
+            alert('An error occurred while uploading the file.');
+        }
+    };
+
+    // Send the form data with files
+    xhr.send(formData);
+});
+
 </script>
 </body>
 </html>

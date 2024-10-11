@@ -696,7 +696,9 @@ a{
 }
 
 .error{
-    margin: auto;
-    font-size: small;
-    color: red;
+    color: #ee6e68;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    margin-bottom: 7px;
+    margin-top: 0.5rem;
 }
